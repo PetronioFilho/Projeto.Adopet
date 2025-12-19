@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Alura.Adopet.Console.Modelos;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http.Headers;
@@ -6,23 +7,14 @@ using System.Net.Http.Json;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Alura.Adopet.Console
+namespace Alura.Adopet.Console.Servicos
 {
-    internal class List
+    internal class HttpClientPet
     {
-        HttpClient client;
-        public List()
+        private HttpClient client;
+        public HttpClientPet()
         {
             client = ConfiguraHttpClient("http://localhost:5057");
-        }
-        public async Task ListaDadosPetsDaAPIAsync()
-        {
-            IEnumerable<Pet>? pets = await ListPetsAsync();
-            System.Console.WriteLine("----- Lista de Pets importados no sistema -----");
-            foreach (var pet in pets)
-            {
-                System.Console.WriteLine(pet);
-            }
         }
 
         HttpClient ConfiguraHttpClient(string url)
@@ -35,7 +27,12 @@ namespace Alura.Adopet.Console
             return _client;
         }
 
-        async Task<IEnumerable<Pet>?> ListPetsAsync()
+        public Task CreatePetAsync(Pet pet)
+        {
+            return client.PostAsJsonAsync("pet/add", pet);
+        }
+
+        public async Task<IEnumerable<Pet>?> ListPetsAsync()
         {
             HttpResponseMessage response = await client.GetAsync("pet/list");
             return await response.Content.ReadFromJsonAsync<IEnumerable<Pet>>();
